@@ -89,6 +89,34 @@
             }
         }
 
+        function pushEventStarted(){
+            $.ajax({
+                url: 'https://shop.doordevil.com/p1/email.php',
+                method: 'GET',
+                data: {
+                    url : window.location.href,
+                    action: 'event_started'
+                },
+                success : function(response){
+
+                }
+            })
+        }
+
+        function pushEventCompleted(){
+            $.ajax({
+                url: 'https://shop.doordevil.com/p1/email.php',
+                method: 'GET',
+                data: {
+                    url : window.location.href,
+                    action: 'event_completed'
+                },
+                success : function(response){
+
+                }
+            })
+        }
+
         function toggleExitIntentPopop(){
             /*if(window.location.href.includes((window.location.origin + '/select/'))){
                 var urlParams = new URLSearchParams(window.location.search);
@@ -96,6 +124,7 @@
                     elementorProFrontend.modules.popup.showPopup( { id: 8428 } );
                 }else{
                     $('.js-exit-intent-popup').toggleClass('show');
+                    pushEventStarted();
                     if(urlParams.has('email') && isEmail(urlParams.get('email'))){
                         $('.exit-intent-popup-content .input-wrap input#email').val(urlParams.get('email'));
                         moveQuiz(false);
@@ -168,30 +197,50 @@
         });
 
         function pushData(email, phone){
-            var data = {
-                api_key: '7f3d1ea4a4bd53b34153ab5770e4b76bc8af3f763651ddefd5decc12f5e51c33c7d167d7',
-                api_action: 'contact_add',
-                api_output: 'json',
-                tags : 'pda-offer-1a',
-                email : email,
-                phone : phone,
-            }
-
             $.ajax({
-                url: 'https://doordevil.api-us1.com/admin/api.php?api_action=contact_add',
-                headers:{
-                    'Access-Control-Allow-Origin': '*',
+                url: 'https://shop.doordevil.com/p1/email.php',
+                method: 'GET',
+                data: {
+                    email : email,
+                    phone : phone,
+                    id : $('.campaign-form').data('id'),
+                    action : 'update_phone'
                 },
-                method: 'POST',
-                data: data,
                 success : function(response){
                     if(response.result_code == 1){
+                        pushEventCompleted();
                         moveQuiz();
                         return;
                     }
                 }
             })
         }
+
+        function pushEmail(email){
+            $.ajax({
+                url: 'https://shop.doordevil.com/p1/email.php',
+                method: 'GET',
+                data: {
+                    email : email,
+                    tag : 'exit-intent-p1',
+                    action : 'add_email'
+                },
+                success : function(response){
+                    if(response.result_code == 1){
+                        $('.campaign-form').data('id',Object.values(response)[0])
+                        vgo('setEmail', email);
+                        moveQuiz();
+                        return;
+                    }else if(Object.values(response)[0] && Object.values(response)[0].id){
+                        $('.campaign-form').data('id',Object.values(response)[0].id)
+                        vgo('setEmail', email);
+                        moveQuiz();
+                        return;
+                    }
+                }
+            })
+        }
+
 
         $('.js-exit-intent-popup .quiz-mover').click(function(e){
 
@@ -210,8 +259,7 @@
                 }
 
                 $('.campaign-form').data('email',$email.val());
-
-                moveQuiz();
+                pushEmail($('.campaign-form').data('email'));
 
             }else if($(this).data('model') === 'mobile'){
 
