@@ -17,11 +17,11 @@ class PluginTemplate{
 
     function initialize_scripts(){
         wp_enqueue_script( 'jquery' );
-        wp_enqueue_script('plugin-template-js',plugin_dir_url(__FILE__).'assets/js/script.js?v=' . $this->getRendomNum());
-        wp_enqueue_style('plugin-template-css',plugin_dir_url(__FILE__).'assets/css/style.css?v=' . $this->getRendomNum());
+        wp_enqueue_script('plugin-template-js',plugin_dir_url(__FILE__).'assets/js/script.js?v=' . $this->getRandomNum());
+        wp_enqueue_style('plugin-template-css',plugin_dir_url(__FILE__).'assets/css/style.css?v=' . $this->getRandomNum());
     }
 
-    function getRendomNum(){
+    function getRandomNum(){
         if(is_user_logged_in()){
             return rand();
         }else{
