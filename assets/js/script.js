@@ -136,7 +136,7 @@
                     }
                 }
             }*/
-            elementorProFrontend.modules.popup.showPopup( { id: 8428 } );
+            //elementorProFrontend.modules.popup.showPopup( { id: 8428 } );
         }
 
         // Exit intent trigger
